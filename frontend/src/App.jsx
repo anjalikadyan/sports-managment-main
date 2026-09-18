@@ -5,6 +5,7 @@ import Login from './components/Auth/Login';
 import SuperAdminDashboard from './components/Dashboard/SuperAdminDashboard';
 import CoachDashboard from './components/Dashboard/CoachDashboard';
 import PlayerDashboard from './components/Dashboard/PlayerDashboard';
+import { API_BASE_URL } from './config/api';
 import './App.css';
 
 function App() {
@@ -14,21 +15,49 @@ function App() {
 
   // Check if user is already logged in on app load
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    const savedUser = sessionStorage.getItem('user');
-    
-    if (token && savedUser) {
+    const restoreSession = async () => {
+      const token = sessionStorage.getItem('token');
+
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-        setCurrentView('dashboard');
-      } catch (error) {
-        // Invalid saved user data, clear it
+        const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('user');
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        const userData = data.data?.user;
+        if (userData) {
+          const normalized = {
+            id: userData.id || userData._id,
+            name: userData.name,
+            email: userData.email,
+            role: userData.role,
+            isActive: userData.isActive,
+          };
+          sessionStorage.setItem('user', JSON.stringify(normalized));
+          setUser(normalized);
+          setCurrentView('dashboard');
+        }
+      } catch {
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    restoreSession();
   }, []);
 
   const handleLoginSuccess = (userData) => {

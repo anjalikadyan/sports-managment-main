@@ -65,16 +65,14 @@ const CoachDashboard = ({ user, onLogout }) => {
 
   const fetchTeams = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/teams`, {
+      const response = await fetch(`${API_BASE_URL}/api/teams/mine`, {
         headers: { 'Authorization': `Bearer ${getToken()}` },
       });
       const data = await response.json();
 
       if (data.success) {
-        // Filter teams where this coach is the coach
-        const coachTeams = data.data.filter(t => t.coachId?._id === user.id);
+        const coachTeams = data.data || [];
         setTeams(coachTeams);
-        // If we have teams but none selected (and not in stats view where we might have a different selection logic), select first
         if (coachTeams.length > 0 && !selectedTeam) {
           setSelectedTeam(coachTeams[0]);
         }
@@ -88,13 +86,13 @@ const CoachDashboard = ({ user, onLogout }) => {
 
   const fetchAvailablePlayers = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/players`, {
         headers: { 'Authorization': `Bearer ${getToken()}` },
       });
       const data = await response.json();
 
       if (data.success) {
-        const players = data.data.users.filter(u => u.role === 'player' && !u.teamId);
+        const players = (data.data.players || []).filter((u) => !u.teamId);
         setAvailablePlayers(players);
       }
     } catch (err) {

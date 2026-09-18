@@ -66,12 +66,11 @@ const register = async (req, res, next) => {
       });
     }
 
-    // Check if role is valid
-    const validRoles = ["super_admin", "coach", "player"];
+    const validRoles = ["coach", "player"];
     if (!validRoles.includes(role)) {
       return res.status(400).json({
         success: false,
-        error: "Invalid role. Must be one of: super_admin, coach, player",
+        error: "Invalid role. Must be coach or player",
       });
     }
 
@@ -82,17 +81,6 @@ const register = async (req, res, next) => {
         success: false,
         error: "User already exists with this email",
       });
-    }
-
-    // Restrict super_admin creation (only one should exist)
-    if (role === "super_admin") {
-      const existingSuperAdmin = await User.findOne({ role: "super_admin" });
-      if (existingSuperAdmin) {
-        return res.status(400).json({
-          success: false,
-          error: "Super admin already exists. Only one super admin is allowed.",
-        });
-      }
     }
 
     // Create user
