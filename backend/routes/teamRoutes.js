@@ -71,7 +71,7 @@ const createTeam = async (req, res, next) => {
 // @access  Private
 const getTeams = async (req, res, next) => {
   try {
-    const { isApproved, isActive, sport, page = 1, limit = 10 } = req.query;
+    const { isApproved, isActive, sport, page = 1, limit = 100 } = req.query;
 
     // Build query
     const query = {};
@@ -98,6 +98,34 @@ const getTeams = async (req, res, next) => {
         limit: parseInt(limit),
         pages: Math.ceil(total / limit),
       },
+      data: teams,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get teams for the current user
+// @route   GET /api/teams/mine
+// @access  Private
+const getMyTeams = async (req, res, next) => {
+  try {
+    const query = {};
+    if (req.user.role === "coach") {
+      query.coachId = req.user.id;
+    } else if (req.user.role === "player") {
+      query["players.playerId"] = req.user.id;
+    }
+
+    const teams = await Team.find(query)
+      .populate("coachId", "name email phone")
+      .populate("captainId", "name email")
+      .populate("players.playerId", "name email phone position jerseyNumber")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: teams.length,
       data: teams,
     });
   } catch (error) {
@@ -508,6 +536,7 @@ const leaveTeam = async (req, res, next) => {
 // Routes
 router.post("/", protect, authorize("coach"), createTeam);
 router.get("/", protect, getTeams);
+router.get("/mine", protect, getMyTeams);
 router.get("/:id", protect, getTeam);
 router.put("/:id", protect, updateTeam);
 router.put(

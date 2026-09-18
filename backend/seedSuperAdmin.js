@@ -2,38 +2,38 @@ const mongoose = require("mongoose");
 const User = require("./models/User");
 const config = require("./config/config");
 
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@sportspro.com";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin1234";
+
 const createSuperAdmin = async () => {
   try {
-    // Connect to MongoDB
     await mongoose.connect(config.mongodbUri);
-    console.log("MongoDB Connected");
+    console.log(`MongoDB connected: ${mongoose.connection.name}`);
 
-    // Check if super admin already exists
     const existingSuperAdmin = await User.findOne({ role: "super_admin" });
 
     if (existingSuperAdmin) {
-      console.log("Super Admin already exists:", existingSuperAdmin.email);
+      console.log("Super admin already exists:", existingSuperAdmin.email);
       return;
     }
 
-    // Create super admin
     const superAdmin = await User.create({
       name: "Super Administrator",
-      email: "admin@sportsmanagement.com",
-      password: "admin123", // This will be hashed automatically
+      email: ADMIN_EMAIL,
+      password: ADMIN_PASSWORD,
       role: "super_admin",
     });
 
-    console.log("Super Admin created successfully:");
+    console.log("Super admin created.");
     console.log("Email:", superAdmin.email);
-    console.log("Password: admin123");
-    console.log("Please change the password after first login!");
+    console.log("Password:", ADMIN_PASSWORD);
+    console.log("Change this password after first login.");
   } catch (error) {
-    console.error("Error creating Super Admin:", error);
+    console.error("Error creating super admin:", error.message);
+    process.exitCode = 1;
   } finally {
-    mongoose.disconnect();
+    await mongoose.disconnect();
   }
 };
 
-// Run the seeder
 createSuperAdmin();

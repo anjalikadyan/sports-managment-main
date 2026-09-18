@@ -48,7 +48,7 @@ const PlayerDashboard = ({ user, onLogout }) => {
       setLoading(true);
       const token = sessionStorage.getItem("token");
 
-      const response = await fetch(`${API_BASE_URL}/api/teams`, {
+      const response = await fetch(`${API_BASE_URL}/api/teams/mine`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

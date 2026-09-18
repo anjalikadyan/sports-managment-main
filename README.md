@@ -1,92 +1,78 @@
-# Sports Management System
+# SportsPro — Sports Management System
 
-A full-stack web application for managing sports tournaments, teams, matches, and player statistics. The platform supports multiple user roles (Super Admin, Coach, Player), secure authentication, and modern UI/UX for both admin and team management workflows.
+Full-stack app for tournaments, teams, matches, and player stats. Roles: Super Admin, Coach, Player.
 
-## Features
-- User authentication (login/register for players, coaches, super admins)
-- Team creation, player roster management (add/edit/remove, registered & unregistered players)
-- Tournament and match scheduling
-- Player statistics tracking
-- Role-based dashboards (Super Admin, Coach, Player)
-- Modern React frontend with animated UI and responsive design
-- RESTful Express backend with MongoDB
+## Local setup (MongoDB Compass)
 
-## Directory Structure
+### 1. Start MongoDB and open Compass
+
+Connect Compass to:
 
 ```
-├── backend/
-│   ├── config/           # Database and app config
-│   ├── controllers/      # Express route handlers
-│   ├── middleware/       # Auth, logging, error handling
-│   ├── models/           # Mongoose schemas (User, Team, Match, etc.)
-│   ├── routes/           # API endpoints (auth, teams, matches, etc.)
-│   ├── index.js          # Main Express app entry
-│   ├── seedSuperAdmin.js # Script to seed a super admin user
-│   └── ...
-├── frontend/
-│   ├── public/           # Static assets
-│   ├── src/
-│   │   ├── components/   # React components (Dashboards, Modals, etc.)
-│   │   ├── assets/       # Images, icons
-│   │   ├── App.jsx       # Main app component
-│   │   └── ...
-│   ├── index.html        # App entry point
-│   ├── package.json      # Frontend dependencies
-│   └── ...
-├── MATCH_SCHEDULING_IMPLEMENTATION.md # Design notes
-└── ...
+mongodb://127.0.0.1:27017
 ```
 
-## Getting Started
+If Compass cannot connect, start **MongoDB Community** (Windows service `MongoDB`) first.
 
-### Prerequisites
-- Node.js (v18+ recommended)
-- MongoDB (local or Atlas)
+### 2. Create database `sportspro`
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/rohit-2059/sports-managment.git
-cd sports-managment
-```
+In Compass: **Create Database**
 
-### 2. Backend Setup
+- Database name: `sportspro`
+- Collection name: `_init` (optional; you can delete it later)
+
+You can skip this step. The API creates `sportspro` on first connect.
+
+### 3. Backend
+
 ```bash
 cd backend
+copy .env.example .env
 npm install
-# Configure MongoDB URI in config/database.js or via environment variables
-npm run dev   # or: node index.js
+npm run seed:admin
+npm run dev
 ```
 
-### 3. Frontend Setup
+API: http://localhost:3001  
+Health: http://localhost:3001/api/health
+
+Default admin (change after login):
+
+- Email: `admin@sportspro.com`
+- Password: `Admin1234`
+
+Refresh Compass → `sportspro` → `users`.
+
+### 4. Frontend
+
 ```bash
-cd ../frontend
+cd frontend
+copy .env.example .env
 npm install
 npm run dev
-# App runs at http://localhost:5173 (default Vite port)
 ```
 
-### 4. Seed a Super Admin (optional)
-```bash
-cd backend
-node seedSuperAdmin.js
-# Check the script for default credentials
-```
+App: http://localhost:5173
 
-### 5. Access the App
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3001
+Register as **Coach** or **Player**. Super admin is seed-only.
 
-## Common Commands
-- **Backend**
-  - `npm run dev` — start Express server with nodemon
-  
-- **Frontend**
-  - `npm run dev` — start Vite dev server
+## Environment
 
-## Notes
-- All protected API routes require a valid JWT in the `Authorization` header.
-- For E2E testing, see TestSprite or Postman instructions in the project documentation.
+| Variable | Where | Purpose |
+|---|---|---|
+| `MONGODB_URI` | backend | Default `mongodb://127.0.0.1:27017/sportspro` |
+| `PORT` | backend | API port, **3001** |
+| `JWT_SECRET` | backend | Required in production |
+| `VITE_API_URL` | frontend | Must match backend, `http://localhost:3001` |
 
----
+Do not commit `.env` files.
 
-For more details, see the code and markdown docs in the repo.
+## Stack
+
+- Frontend: React + Vite + Tailwind
+- Backend: Express + JWT
+- Database: MongoDB (Compass locally, or Atlas in production)
+
+## Production
+
+See `DEPLOYMENT_GUIDE.md`. Use a new Atlas database and new credentials — never reuse sample URIs from old docs.

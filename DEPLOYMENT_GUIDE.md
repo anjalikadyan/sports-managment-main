@@ -9,7 +9,7 @@ This guide will help you deploy the SportsPro application with:
 - GitHub account
 - Vercel account (free tier available)
 - Render account (free tier available)
-- MongoDB Atlas account (already configured)
+- MongoDB Atlas **or** local MongoDB (Compass) with a dedicated `sportspro` database
 
 ---
 
@@ -40,11 +40,11 @@ In the Render dashboard, go to **Environment** tab and add these variables:
 
 ```
 NODE_ENV=production
-MONGODB_URI=mongodb+srv://rohitkhandelwal2059:rohit1027@rohit.mtrcijc.mongodb.net/sports-managment?appName=rohit
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+MONGODB_URI=mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/sportspro?retryWrites=true&w=majority
+JWT_SECRET=generate-a-long-random-string
 JWT_EXPIRE=7d
-EMAIL_USER=roht.khandelwal.2059@gmail.com
-EMAIL_PASSWORD=iteyraблnbdlupcs
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-gmail-app-password
 FRONTEND_URL=https://your-app-name.vercel.app
 CORS_ORIGIN=https://your-app-name.vercel.app
 ```

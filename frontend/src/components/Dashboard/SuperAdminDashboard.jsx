@@ -86,7 +86,7 @@ const SuperAdminDashboard = ({ user, onLogout }) => {
     const fetchTeams = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await fetch(`${API_BASE_URL}/api/teams`, {
+            const response = await fetch(`${API_BASE_URL}/api/teams?limit=100`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             const data = await response.json();
@@ -101,7 +101,7 @@ const SuperAdminDashboard = ({ user, onLogout }) => {
     const fetchUsers = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
+            const response = await fetch(`${API_BASE_URL}/api/auth/users?limit=100`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             const data = await response.json();
